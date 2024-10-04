@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <title>Should I Deploy Today?</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body onload="getdate()">
+    <div class="container">
+        <div id="main" class="wrapper">
+            <div class="item">
+                <h3 class="tagline">should i deploy?</h3>
+                <h2 class="reason" id="text"></h2>
+                <span id="reload" onclick="getdate()">
+                    Hit <span class="space-btn">Space</span> or Click
+                </span>
+            </div>
+            <div class="meta"></div>
+        </div>
+    </div>
+</body>
+<script>
+    const getdate = () => {
+        timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
+        fetch(`/api?tz=${timezone}`).then(data => data.json()).then(data => {
+            document.getElementById("text").innerText = data.message
+            const sid = data.shouldIDeploy
+            const elem = document.getElementById("main")
+            if (sid) {
+                elem.classList.remove("its-friday")
+            } else {
+                elem.classList.add("its-friday")
+            }
+
+        }).catch(err => console.error(err))
+    }
+    document.body.onkeyup = function (e) {
+        if (e.key == " " ||
+            e.code == "Space" ||
+            e.keyCode == 32
+        ) {
+            getdate()
+        }
+    }
+</script>
+
+</html>
