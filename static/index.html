@@ -1,6 +1,12 @@
 <html>
 
 <head>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
     <title>Should I Deploy Today?</title>
     <link rel="stylesheet" href="style.css">
 
@@ -22,8 +28,18 @@
 </body>
 <script>
     const getdate = () => {
-        timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
-        fetch(`/api?tz=${timezone}`).then(data => data.json()).then(data => {
+        let params = new URL(document.location.toString()).searchParams;
+        let timeZone = params.get("tz");
+        let date = params.get("date")
+        if (!timeZone) {
+            timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
+        }
+        let query = `tz=${timeZone}`
+        if (date) {
+            query += `&date=${date}`
+        }
+
+        fetch(`/api?${query}`).then(data => data.json()).then(data => {
             document.getElementById("text").innerText = data.message
             const sid = data.shouldIDeploy
             const elem = document.getElementById("main")
